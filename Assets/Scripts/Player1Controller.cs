@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Player1Controller : MonoBehaviour {
 
+	// options
 	float moveSpeed = 10f;
 	float boosterForce = 20f;
 	float diveForce = 150f;
@@ -11,9 +12,16 @@ public class Player1Controller : MonoBehaviour {
 	int currentState = 0; // animation state
 	int currentDirection = -1; // -1: left, 1: right
 
+	// controls
+	KeyCode KEY_LEFT = KeyCode.A;
+	KeyCode KEY_RIGHT = KeyCode.D;
+	KeyCode KEY_UP = KeyCode.W;
+	KeyCode KEY_DIVE = KeyCode.LeftShift;
+
 	// vars
 	Animator animator;
 	Rigidbody2D rb;
+	Vector3 startposition;
 
 	// anim state references
 	const int STATE_MOVE_LEFT = 2;
@@ -25,16 +33,17 @@ public class Player1Controller : MonoBehaviour {
 	void Start () {
 		animator = GetComponent<Animator> ();
 		rb = GetComponent<Rigidbody2D> ();
+		startposition = transform.position;
 	}
 
 	void FixedUpdate() {
 
-		if (Input.GetKey (KeyCode.A)) { // move left
+		if (Input.GetKey (KEY_LEFT)) { // move left
 			currentState = STATE_MOVE_LEFT;
 			currentDirection = -1;
 			rb.AddForce ( new Vector2(-moveSpeed,0f) );
 
-		} else if (Input.GetKey (KeyCode.D)) { // move right
+		} else if (Input.GetKey (KEY_RIGHT)) { // move right
 			currentState = STATE_MOVE_RIGHT;
 			currentDirection = 1;
 			rb.AddForce ( new Vector2(moveSpeed,0f) );
@@ -49,11 +58,11 @@ public class Player1Controller : MonoBehaviour {
 
 		animator.SetInteger ("state", currentState);
 
-		if (Input.GetKey (KeyCode.W)) {
+		if (Input.GetKey (KEY_UP)) {
 			rb.AddForce (new Vector2 (0f, boosterForce));
 		}
 
-		if(Input.GetKeyDown(KeyCode.LeftShift)) {
+		if(Input.GetKeyDown(KEY_DIVE)) {
 			if(rb.constraints.Equals(RigidbodyConstraints2D.FreezeRotation)) {
 				rb.constraints = RigidbodyConstraints2D.None;
 				float vforce = diveForce;
@@ -72,6 +81,14 @@ public class Player1Controller : MonoBehaviour {
 				new Vector2 (rb.velocity.x * kickForce / 2, rb.velocity.magnitude * kickForce)
 			);
 		}
+	}
+
+	public void Reset() {
+		transform.position = startposition;
+		currentState = 1;
+		rb.velocity = Vector2.zero;
+		transform.SetPositionAndRotation (transform.position, Quaternion.Euler (0f, 0f, 0f));
+		rb.constraints = RigidbodyConstraints2D.FreezeRotation;
 	}
 
 }
