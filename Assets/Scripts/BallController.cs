@@ -16,5 +16,6 @@ public class BallController : MonoBehaviour {
 	public void Reset() {
 		transform.position = startposition;
 		rb.velocity = Vector2.zero;
+		rb.angularVelocity = 0;
 	}
 }
